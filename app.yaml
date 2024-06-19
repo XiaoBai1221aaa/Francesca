@@ -7,4 +7,4 @@ handlers:
 - url: /.*
   script: auto
 
-service_account: app-engine-service-account@francesca-v1.iam.gserviceaccount.com
+service_account: admin-675@francesca-v1.iam.gserviceaccount.com
