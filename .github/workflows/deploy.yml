@@ -16,12 +16,11 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.8' # 使用兼容的 Python 版本
+        python-version: '3.8'
 
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v2.1.0
       with:
-        version: 'latest'
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         export_default_credentials: true
