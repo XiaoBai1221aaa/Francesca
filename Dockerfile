@@ -1,26 +1,32 @@
-# Use the official Python image from the Docker Hub
-FROM python:3.8-slim
+name: Deploy to Cloud Run
 
-# Set the working directory in the container
-WORKDIR /app
+on:
+  push:
+    branches:
+      - main
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-# Install any needed packages specified in requirements.txt
-# Install gcc and other dependencies for building pyaudio
-RUN apt-get update && \
-    apt-get install -y build-essential portaudio19-dev && \
-    pip install --no-cache-dir -r requirements.txt && \
-    apt-get remove -y build-essential && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v2
 
-# Make port 8080 available to the world outside this container
-EXPOSE 8080
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2.1.0
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
 
-# Define environment variable
-ENV NAME World
+    - name: Configure Docker with gcloud
+      run: gcloud auth configure-docker
 
-# Run app.py when the container launches
-CMD ["python", "app.py"]
+    - name: Build the Docker image
+      run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/francesca-app:$GITHUB_SHA .
+
+    - name: Push the Docker image
+      run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/francesca-app:$GITHUB_SHA
+
+    - name: Deploy to Cloud Run
+      run: gcloud run deploy francesca-app --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/francesca-app:$GITHUB_SHA --platform managed --region us-central1 --quiet
