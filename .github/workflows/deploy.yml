@@ -25,5 +25,8 @@ jobs:
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         export_default_credentials: true
 
+    - name: Verify Authentication
+      run: gcloud auth list
+
     - name: Deploy to App Engine
       run: gcloud app deploy app.yaml --quiet
