@@ -8,7 +8,13 @@ WORKDIR /app
 COPY . /app
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Install gcc and other dependencies for building pyaudio
+RUN apt-get update && \
+    apt-get install -y build-essential portaudio19-dev && \
+    pip install --no-cache-dir -r requirements.txt && \
+    apt-get remove -y build-essential && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
@@ -17,4 +23,4 @@ EXPOSE 8080
 ENV NAME World
 
 # Run app.py when the container launches
-CMD ["python", "main.py"]
+CMD ["python", "app.py"]
