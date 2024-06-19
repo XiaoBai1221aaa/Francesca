@@ -21,6 +21,12 @@ jobs:
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         project_id: 'your-gcp-project-id'
 
+    - name: 'Set up environment variables'
+      run: |
+        echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
+        echo "AZURE_SPEECH_KEY=${{ secrets.AZURE_SPEECH_KEY }}" >> $GITHUB_ENV
+        echo "AZURE_SERVICE_REGION=${{ secrets.AZURE_SERVICE_REGION }}" >> $GITHUB_ENV
+
     - name: 'Deploy to App Engine'
       run: |
         gcloud app deploy
