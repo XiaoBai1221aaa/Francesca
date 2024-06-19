@@ -1,0 +1,25 @@
+name: Deploy to Google App Engine
+
+on:
+  push:
+    branches:
+      - main  # 选择您希望触发部署的分支
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        version: 'latest'
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Deploy to App Engine
+      run: |
+        gcloud app deploy --quiet
