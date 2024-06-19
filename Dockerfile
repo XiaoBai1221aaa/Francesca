@@ -1,32 +1,20 @@
-name: Deploy to Cloud Run
+# Use the official Python image from the Docker Hub
+FROM python:3.8-slim
 
-on:
-  push:
-    branches:
-      - main
+# Set the working directory in the container
+WORKDIR /app
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-    steps:
-    - name: Checkout the code
-      uses: actions/checkout@v2
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v2.1.0
-      with:
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
+# Make port 8080 available to the world outside this container
+EXPOSE 8080
 
-    - name: Configure Docker with gcloud
-      run: gcloud auth configure-docker
+# Define environment variable
+ENV NAME World
 
-    - name: Build the Docker image
-      run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/francesca-app:$GITHUB_SHA .
-
-    - name: Push the Docker image
-      run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/francesca-app:$GITHUB_SHA
-
-    - name: Deploy to Cloud Run
-      run: gcloud run deploy francesca-app --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/francesca-app:$GITHUB_SHA --platform managed --region us-central1 --quiet
+# Run app.py when the container launches
+CMD ["python", "main.py"]
