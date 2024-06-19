@@ -1,0 +1,13 @@
+Flask
+azure-cognitiveservices-speech
+python-dotenv
+openai
+pyaudio
+wave
+librosa
+speechrecognition
+google-cloud-speech
+numpy
+scipy
+pillow
+noisereduce
